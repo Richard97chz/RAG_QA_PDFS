@@ -1,0 +1,6 @@
+__pycache__
+
+venv/
+*.pyc
+.env
+rag-data-loader/Connection_to_postgres.py

@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "RAG_QA_PDFS"
+version = "0.1.0"
+description = ""
+authors = ["richard.nope.giraldo@gmail.com"]
+readme = "README.md"
+packages = [
+    { include = "app" },
+]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12" 
+uvicorn = "^0.23.2"
+langserve = {extras = ["server"], version = ">=0.0.30"}
+pydantic = "<2"
+tqdm = "^4.66.5"
+unstructured = {extras = ["all-docs"], version = "^0.15.7"}
+langchain-experimental = "^0.0.64"
+python-dotenv = "^1.0.1"
+langchain-openai = "^0.1.22"
+langchain-community = "^0.2.12"
+tiktoken = "^0.7.0"
+psycopg = "^3.2.1"
+pgvector = "^0.3.2"
+
+
+[tool.poetry.group.dev.dependencies]
+langchain-cli = ">=0.0.15"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
