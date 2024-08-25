@@ -8,6 +8,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
 from langchain_core.runnables import RunnableParallel
+from langchain.retrievers.multi_query import MultiQueryRetriever
 
 # Cargar las variables de entorno
 load_dotenv()
@@ -42,9 +43,15 @@ llm = ChatOpenAI(temperature=0, model='gpt-4-1106-preview', streaming=True)
 class RagInput(TypedDict):
     question: str
 
+multiquery = MultiQueryRetriever.from_llm(
+    retriever=vector_store.as_retriever(),
+    llm=llm,
+)
+
+
 final_chain = (
     RunnableParallel(
-        context=(itemgetter("question") | vector_store.as_retriever()),
+        context=(itemgetter("question") | multiquery),
         question=itemgetter("question")
     )|
     RunnableParallel(

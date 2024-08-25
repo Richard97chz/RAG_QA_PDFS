@@ -47,6 +47,7 @@ function App() {
 
     await fetchEventSource(`http://localhost:8000/rag/stream`, {
       method: 'POST',
+      openWhenHidden: true,
       headers: {
         'Content-Type': 'application/json',
       },

@@ -21,7 +21,7 @@ connection_string = f"postgresql+psycopg://{db_user}:{db_password}@{db_host}:{db
 
 # Configurar el cargador de directorios
 loader = DirectoryLoader(
-    os.path.abspath("C:/Users/Fytli/LLM_Bootcamp2024/RAG_QA_PDFS_venv/RAG_QA_PDFS/pdf-documents"),
+    os.path.abspath("C:/Users/Fytli/LLM_Bootcamp2024/RAG_PDFS_venv/RAG_QA_PDFS/RAG_QA_PDFS/pdf-documents"),
     glob="**/*.pdf",
     use_multithreading=True,
     show_progress=True,

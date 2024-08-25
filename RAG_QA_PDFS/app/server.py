@@ -47,7 +47,7 @@ async def upload_files(files: list[UploadFile] = File(...)):
 @app.post("/load-and-process-pdfs")
 async def load_and_process_pdfs():
     try:
-        subprocess.run(["C:/Users/Fytli/LLM_Bootcamp2024/RAG_QA_PDFS_venv/RAG_QA_PDFS/rag-data-loader/run_script.bat"], check=True)
+        subprocess.run(["C:/Users/Fytli/LLM_Bootcamp2024/RAG_PDFS_venv/RAG_QA_PDFS/RAG_QA_PDFS/rag-data-loader/run_script.bat"], check=True)
         return {"message": "PDFs loaded and processed successfully"}
     except subprocess.CalledProcessError as e:
         return {"error": "Failed to execute script: {str(e)}"}
