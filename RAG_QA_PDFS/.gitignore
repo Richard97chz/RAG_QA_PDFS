@@ -1,6 +1,14 @@
-__pycache__
-
+# Ignorar entornos virtuales
 venv/
-*.pyc
 .env
+
+# Ignorar dependencias
+__pycache__
+*.pyc
+*.pyo
 rag-data-loader/Connection_to_postgres.py
+
+# Ignorar archivos de configuración específicos del entorno
+.DS_Store
+.vscode/
+.idea/

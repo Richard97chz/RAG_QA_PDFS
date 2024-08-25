@@ -21,7 +21,7 @@ connection_string = f"postgresql+psycopg://{db_user}:{db_password}@{db_host}:{db
 
 # Configurar el cargador de directorios
 loader = DirectoryLoader(
-    os.path.abspath("../pdf-documents"),
+    os.path.abspath("C:/Users/Fytli/LLM_Bootcamp2024/RAG_QA_PDFS_venv/RAG_QA_PDFS/pdf-documents"),
     glob="**/*.pdf",
     use_multithreading=True,
     show_progress=True,
@@ -39,7 +39,8 @@ embeddings = OpenAIEmbeddings(model='text-embedding-ada-002')
 text_splitter = SemanticChunker(embeddings=embeddings)
 
 # Extraer el contenido de cada documento
-flattened_docs = [doc.page_content for doc in docs if doc.page_content]
+#flattened_docs = [doc.page_content for doc in docs if doc.page_content]
+flattened_docs = [doc[0] for doc in docs if doc]
 
 # Dividir los textos en fragmentos usando split_text para cada documento
 chunks = [text_splitter.split_text(doc) for doc in flattened_docs]
@@ -49,7 +50,7 @@ chunk_documents = [Document(page_content=chunk) for sublist in chunks for chunk 
 
 # Guardar los fragmentos en la base de datos PostgreSQL usando PGVector
 PGVector.from_documents(
-    documents=chunk_documents,
+    documents=chunks,
     embedding=embeddings,
     collection_name="collection164",
     connection_string=connection_string,
