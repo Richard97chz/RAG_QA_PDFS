@@ -10,6 +10,13 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_core.runnables import RunnableParallel
 from langchain.retrievers.multi_query import MultiQueryRetriever
 
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_community.chat_message_histories import SQLChatMessageHistory
+from langchain.prompts import PromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.messages import get_buffer_string
+
 # Cargar las variables de entorno
 load_dotenv()
 
@@ -49,13 +56,53 @@ multiquery = MultiQueryRetriever.from_llm(
 )
 
 
-final_chain = (
-    RunnableParallel(
-        context=(itemgetter("question") | multiquery),
-        question=itemgetter("question")
-    )|
-    RunnableParallel(
+
+old_chain = (
+        RunnableParallel(
+            context=(itemgetter("question") | multiquery),
+            question=itemgetter("question")
+        ) |
+        RunnableParallel(
             answer=(ANSWER_PROMPT | llm),
             docs=itemgetter("context")
         )
 ).with_types(input_type=RagInput)
+
+postgres_memory_url = "postgresql+psycopg://postgres:postgres@localhost:5432/pdf_rag_history"
+
+get_session_history = lambda session_id: SQLChatMessageHistory(
+    connection_string=postgres_memory_url,
+    session_id=session_id
+)
+
+template_with_history="""
+Given the following conversation and a follow
+up question, rephrase the follow up question
+to be a standalone question, in its original
+language
+
+Chat History:
+{chat_history}
+Follow Up Input: {question}
+Standalone question:"""
+
+standalone_question_prompt = PromptTemplate.from_template(template_with_history)
+
+standalone_question_mini_chain = RunnableParallel(
+    question=RunnableParallel(
+        question=RunnablePassthrough(),
+        chat_history=lambda x:get_buffer_string(x["chat_history"])
+    )
+    | standalone_question_prompt
+    | llm
+    | StrOutputParser()
+)
+
+
+final_chain = RunnableWithMessageHistory(
+    runnable=standalone_question_mini_chain | old_chain,
+    input_messages_key="question",
+    history_messages_key="chat_history",
+    output_messages_key="answer",
+    get_session_history=get_session_history,
+)

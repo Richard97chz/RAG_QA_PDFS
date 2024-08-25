@@ -3,6 +3,8 @@ venv/
 *.pyc
 .env
 rag-data-loader/Connection_to_postgres.py
+rag-data-loader/Database_for_chatHistory.py
+
 
 # Node.js
 node_modules/

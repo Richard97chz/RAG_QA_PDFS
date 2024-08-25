@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import './App.css';
 import {fetchEventSource} from "@microsoft/fetch-event-source";
+import {v4 as uuidv4} from 'uuid';
 
 interface Message {
   message: string;
@@ -12,6 +13,11 @@ function App() {
   const [inputValue, setInputValue] = useState("")
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const sessionIdRef = useRef<string>(uuidv4());
+
+  useEffect(() => {
+    sessionIdRef.current = uuidv4();
+  }, []);
 
   const setPartialMessage = (chunk: string, sources: string[] = []) => {
     setMessages(prevMessages => {
@@ -54,6 +60,11 @@ function App() {
       body: JSON.stringify({
         input: {
           question: message,
+        },
+        config: {
+          configurable: {
+          sessionId: sessionIdRef.current
+          }
         }
       }),
       onmessage(event) {
